@@ -52,12 +52,12 @@
                         <p>Lamaran Saya</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="<?php echo site_url('candidate/exam/list'); ?>" class="nav-link">
+                <!-- <li class="nav-item">
+                    <a href="<?php // echo site_url('candidate/exam/list'); ?>" class="nav-link">
                         <i class="nav-icon fas fa-desktop"></i>
                         <p>Online Test</p>
                     </a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                     <a href="<?php echo site_url('candidate/change_password/'); ?>" class="nav-link">
                         <i class="nav-icon fas fa-lock"></i>

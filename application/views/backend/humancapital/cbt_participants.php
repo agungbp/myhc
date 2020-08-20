@@ -122,6 +122,14 @@
                 <div class="card">
                     <div class="card-header">
                         <a href="<?php echo site_url('humancapital/exam/list'); ?>" class="btn btn-danger pull-left"><i class="fas fa-arrow-left"></i>&nbsp;&nbsp;&nbsp;Exam List</a>
+                        <?php 
+                            if($participants->num_rows() > 0){
+                                if($participants->row()->user_type != 'ALL'){ ?>
+                                    <a href="#" class="btn btn-primary pull-left" data-toggle="modal" data-target="#modal-md"><i class="fas fa-plus"></i>&nbsp;&nbsp;&nbsp;Participants</a>
+                        <?php 
+                                }
+                            } 
+                        ?>        
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -136,6 +144,7 @@
                                     <th>Wrong</th>
                                     <th>Score</th>
                                     <th width="10%">Status</th>
+                                    <th width="5%">Options</th>
                                 </tr>
                             </thead>
                             <tfoot>
@@ -148,6 +157,7 @@
                                     <th>Wrong</th>
                                     <th>Score</th>
                                     <th>Status</th>
+                                    <th>Options</th>
                                 </tr>
                             </tfoot>
                             <tbody>
@@ -156,11 +166,11 @@
                                     <td style="text-align: center;"><?php echo $count++; ?></td>
                                     <td style="text-align: center;">
                                         <?php 
-                                            if($row['user_type'] == 'EMPLOYEE'){
+                                            // if($row['user_type'] == 'EMPLOYEE'){
                                                 echo $this->db->get_where('employee', array('nik' => $row['nik']))->row()->employee_name; 
-                                            } else {
-                                                echo $this->db->get_where('candidate', array('candidate_ktp' => $row['nik']))->row()->candidate_name; 
-                                            }
+                                            // } else {
+                                            //     echo $this->db->get_where('candidate', array('candidate_ktp' => $row['nik']))->row()->candidate_name; 
+                                            // }
                                         ?>
                                     </td>
                                     <td style="text-align: center;"><?php echo $row['participants_start']; ?></td>
@@ -173,7 +183,14 @@
                                             <h5><span class="badge badge-primary"><?php echo $row['participants_status'] ?></span></h5>
                                         <?php } elseif ($row['participants_status'] == 'Finished') { ?>
                                             <h5><span class="badge badge-success"><?php echo $row['participants_status'] ?></span></h5>
+                                        <?php } elseif ($row['participants_status'] == 'Registered') { ?>
+                                            <h5><span class="badge badge-dark"><?php echo $row['participants_status'] ?></span></h5>
                                         <?php } ?>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <a href="#" class="btn btn-danger" onclick="DeleteModal('<?php echo site_url('humancapital/participants/delete/'. $row['participants_id'] . '/' . $row['exam_id']); ?>');">
+                                            <ion-icon name="trash"></ion-icon>
+                                        </a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>    
@@ -192,8 +209,8 @@
   </div>
   <!-- /.content-wrapper -->
 
-<div class="modal fade" id="modal-lg" data-backdrop="true">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="modal-md" data-backdrop="true">
+    <div class="modal-dialog modal-md">
         <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -201,7 +218,7 @@
               </button>
             </div>
             <div class="modal-body">
-                <?php include 'cbt_question_add.php' ?>
+                <?php include 'cbt_participants_add.php' ?>
             </div>
         </div>
         <!-- /.modal-content -->

@@ -2091,6 +2091,13 @@
                 $this->load->view('backend/index', $page_data);
             }
         }
+        // function delete_participants($participants_id = '')
+        // {
+        //     $this->db->where('participants_id', $participants_id);
+        //     $this->db->delete('cbt_participants');
+
+        //     echo 'success';
+        // }
 
 
         // ------------- QUESTION PACK ------------- //
@@ -2228,6 +2235,26 @@
             if ($this->session->userdata('humancapital_login') != 1) {
                 $this->session->set_userdata('last_page', current_url());
                 redirect(site_url('login'),'refresh');
+            }
+            if ($param1 == 'create') {
+                $participants = $this->humancapital_model->participants_add($param2);
+                if ($participants == true) {
+                    $this->session->set_flashdata('success', 'Data Created Successfully');
+                } else {
+                    $this->session->set_flashdata('error', 'Create Data Failed');
+                }
+                $exam_id = $this->db->get_where('cbt_exam', array('exam_id' => $param2))->row()->exam_id;
+                redirect(site_url('humancapital/participants/list/' . $exam_id),'refresh');
+            }
+            if ($param1 == 'delete') {
+                $participants = $this->humancapital_model->participants_delete($param2);
+                if ($participants == true) {
+                    $this->session->set_flashdata('success', 'Data Deleted Successfully');
+                } else {
+                    $this->session->set_flashdata('error', 'Delete Data Failed');
+                }
+                $exam_id = $this->db->get_where('cbt_exam', array('exam_id' => $param3))->row()->exam_id;
+                redirect(site_url('humancapital/participants/list/' . $exam_id),'refresh');
             }
             if ($param1 == 'list') {
                 $exam_name = $this->db->get_where('cbt_exam', array('exam_id' => $param2))->row()->exam_name;

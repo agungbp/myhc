@@ -1914,6 +1914,7 @@ class Humancapital_model extends CI_Model {
     function exam_add() {
         $user = $this->db->get_where('employee', array('nik' => $this->session->userdata('login_nik')))->row();
 
+        $data['exam_id']           = substr(md5(microtime()),rand(0,26),6);
         $data['exam_name']         = $this->input->post('exam_name');
         $data['exam_start_date']   = $this->input->post('exam_start_date');
         $data['exam_start_time']   = $this->input->post('exam_start_time');
@@ -1923,15 +1924,59 @@ class Humancapital_model extends CI_Model {
         $data['exam_random']       = 'N';
         $data['user_type']         = $this->input->post('user_type');
         $data['questionpack_id']   = $this->input->post('questionpack_id');
-        $data['exam_token']        = substr(md5(microtime()),rand(0,26),5);
+        $data['exam_token']        = substr(md5(microtime()),rand(0,26),12);
         $data['createby']          = $this->session->userdata('login_nik');
         $data['createdate']        = date('Y-m-d H:i:s');
         $data['regional_code']     = $user->regional_code;
         $data['branch_code']       = $user->branch_code;
         $data['origin_code']       = $user->origin_code;
         $data['zone_code']         = $user->zone_code;
+        if($data['user_type'] == 'DEPARTMENT'){
+            $data['exam_section']  = $this->input->post('section_code');
+        }
 
         $this->db->insert('cbt_exam', $data);
+
+        if($data['user_type'] == 'INDIVIDU'){
+            $employee = $this->input->post('nik');
+            foreach ($employee as $row):
+                if($row != ""){
+                    $data2['participants_id']      = $data['exam_id'] . '-' . $row;
+                    $data2['nik']                  = $row;
+                    $data2['exam_id']              = $data['exam_id'];
+                    $data2['participants_status']  = 'Registered';
+
+                    $cek = $this->db->get_where('cbt_participants', array('participants_id' => $data2['participants_id']))->num_rows();
+                    if($cek == 0){
+                        $this->db->insert('cbt_participants', $data2);
+                    }
+                }
+            endforeach;
+        } elseif($data['user_type'] == 'DEPARTMENT'){
+            $section = $this->db->get_where('employee', array('section_code' => $this->input->post('section_code'), 'branch_code' => $this->session->userdata('login_branch'), 'employee_status !=' => 'Resign'))->result_array();
+            foreach($section as $row2):
+                if($row2 != ""){
+                    $data3['participants_id']      = $data['exam_id'] . '-' . $row2['nik'];
+                    $data3['nik']                  = $row2['nik'];
+                    $data3['exam_id']              = $data['exam_id'];
+                    $data3['participants_status']  = 'Registered';
+
+                    $this->db->insert('cbt_participants', $data3);
+                }
+            endforeach;
+        } elseif($data['user_type'] == 'ALL'){
+            $all = $this->db->get_where('employee', array('branch_code' => $this->session->userdata('login_branch'), 'employee_status !=' => 'Resign'))->result_array();
+            foreach($all as $row3):
+                if($row3 != ""){
+                    $data4['participants_id']      = $data['exam_id'] . '-' . $row3['nik'];
+                    $data4['nik']                  = $row3['nik'];
+                    $data4['exam_id']              = $data['exam_id'];
+                    $data4['participants_status']  = 'Registered';
+
+                    $this->db->insert('cbt_participants', $data4);
+                }
+            endforeach;
+        }
 
         return true;
     }
@@ -1943,7 +1988,7 @@ class Humancapital_model extends CI_Model {
         $data['exam_end_time']     = $this->input->post('exam_end_time');
         // $data['exam_random']       = $this->input->post('exam_random');
         $data['exam_random']       = 'N';
-        $data['user_type']         = $this->input->post('user_type');
+        // $data['user_type']         = $this->input->post('user_type');
         $data['questionpack_id']   = $this->input->post('questionpack_id');
 
         $this->db->where('exam_id', $exam_id);
@@ -1964,7 +2009,7 @@ class Humancapital_model extends CI_Model {
         return true;
     }
     function reset_token($exam_id = '') {
-        $data['exam_token'] = substr(md5(microtime()),rand(0,26),5);;
+        $data['exam_token'] = substr(md5(microtime()),rand(0,26),12);
 
         $this->db->where('exam_id', $exam_id);
         $this->db->update('cbt_exam', $data);
@@ -1973,6 +2018,28 @@ class Humancapital_model extends CI_Model {
     }
 
 
+    // ------- PARTICIPANTS ------- //
+
+    function participants_add($param2) {
+        $data['participants_id']      = $param2 . '-' . $this->input->post('nik');
+        $data['nik']                  = $this->input->post('nik');
+        $data['exam_id']              = $param2;
+        $data['participants_status']  = 'Registered';
+
+        $cek = $this->db->get_where('cbt_participants', array('participants_id' => $data['participants_id']))->num_rows();
+        if($cek == 0){
+            $this->db->insert('cbt_participants', $data);
+        }
+
+        return true;
+    }
+
+    function participants_delete($param2) {
+        $this->db->where('participants_id', $param2);
+        $this->db->delete('cbt_participants');
+
+        return true;
+    }
 
     // ------- QUESTION PACKAGE ------- //
 

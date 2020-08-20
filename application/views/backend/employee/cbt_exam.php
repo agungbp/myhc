@@ -21,13 +21,17 @@
     <section class="content">
         <?php 
             $this->db->from('cbt_exam');
-            $this->db->where('user_type', 'EMPLOYEE');
+            $this->db->join('cbt_participants', 'cbt_exam.exam_id = cbt_participants.exam_id');
+            // $this->db->where('user_type', 'EMPLOYEE');
             $this->db->where('branch_code', $this->session->userdata('login_branch'));
+            $this->db->where('nik', $this->session->userdata('login_nik'));
             $this->db->order_by('exam_start_date', 'desc');
             $exam = $this->db->get();
 
             if($exam->num_rows() > 0){
-                foreach ($exam->result_array() as $row): ?>
+                foreach ($exam->result_array() as $row): 
+                    
+        ?>
                     <div class="card text-bold">
                         <div class="card-header">
                             <?php echo $row['exam_name']; ?>

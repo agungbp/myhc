@@ -80,13 +80,7 @@
                     ?>
                         <tr>
                             <td><?php echo $row['exam_name']; ?></td>
-                            <td style="text-align: center;">
-                                <?php
-                                    if ($row['user_type'] == 'EMPLOYEE') {
-                                        echo 'Internal';
-                                    } elseif ($row['user_type'] == 'CANDIDATE') {
-                                        echo 'Eksternal';
-                                    }?></td>
+                            <td style="text-align: center;"><?php echo $row['user_type'] . ' ' . $row['exam_section'] ?></td>
                             <td style="text-align: center;"><?php echo $row['exam_start_date'] . ' ' . $row['exam_start_time']; ?></td>
                             <td style="text-align: center;"><?php echo $row['exam_end_date'] . ' ' . $row['exam_end_time']; ?></td>
                             <td><?php echo $this->db->get_where('cbt_questionpack', array('questionpack_id' => $row['questionpack_id']))->row()->questionpack_name; ?></td>
@@ -116,9 +110,11 @@
                             <td style="text-align: center;"><h4><span class="badge badge-info"><?php echo $row['exam_token']; ?></span></h4></td>
                             <td style="text-align: center;">
                                 <?php if(date('Y-m-d H:i:s') < $row['exam_end_date'] . ' ' . $row['exam_end_time'] && date('Y-m-d H:i:s') > $row['exam_start_date'] . ' ' . $row['exam_start_time']) { ?>
-                                    <h4><span class="badge badge-success">Active</span></h4>
-                                <?php } else { ?>
-                                    <h4><span class="badge badge-danger">Inactive</span></h4>
+                                    <h5><span class="badge badge-success">Sedang Berlangsung</span></h5>
+                                <?php } elseif(date('Y-m-d H:i:s') < $row['exam_start_date'] . ' ' . $row['exam_start_time']) { ?>
+                                    <h5><span class="badge badge-secondary">Belum Dimulai</span></h5>
+                                <?php } elseif(date('Y-m-d H:i:s') > $row['exam_end_date'] . ' ' . $row['exam_end_time']) { ?>
+                                    <h5><span class="badge badge-danger">Sudah Berakhir</span></h5>
                                 <?php } ?>
                             </td>
                             <?php 
@@ -133,13 +129,13 @@
                                                 <i class="fas fa-users"></i>&nbsp;&nbsp;Participants
                                             </a>
                                         </div>
-                                        <?php if($par->num_rows() > 0) { ?>
+                                        <?php if(date('Y-m-d H:i:s') > $row['exam_end_date'] . ' ' . $row['exam_end_time']) { ?>
                                             <a href="<?php echo site_url('humancapital/essay/list/' . $row['exam_id'] . '/' . $row['questionpack_id']); ?>" class="btn btn-info">
                                                 <i class="fas fa-check"></i>&nbsp;&nbsp;Review Essay (<?php echo $this->db->get_where('cbt_question', array('questionpack_id' => $row['questionpack_id'], 'question_type' => 'Essay'))->num_rows(); ?>)
                                             </a>
                                         <?php } ?>
                                         <div class="btn-group">
-                                            <?php if($par->num_rows() <= 0) { ?>
+                                            <?php if(date('Y-m-d H:i:s') < $row['exam_start_date'] . ' ' . $row['exam_start_time']) { ?>
                                                 <a href="#" class="btn btn-success" onclick="FormModal('<?php echo site_url('modal/popup/cbt_exam_edit/'.$row['exam_id'] ); ?>');">
                                                     <ion-icon name="create"></ion-icon>
                                                 </a>
@@ -162,16 +158,16 @@
 
     </section>
     <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
+</div>
+<!-- /.content-wrapper -->
 
 <div class="modal fade" id="modal-lg" data-backdrop="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <?php include 'cbt_exam_add.php' ?>

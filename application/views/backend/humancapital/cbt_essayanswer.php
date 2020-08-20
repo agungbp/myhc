@@ -61,12 +61,12 @@
                             <td style="text-align: center;"><?php echo $count++; ?></td>
                             <td>
                                 <?php 
-                                    $cek = $this->db->get_where('cbt_exam', array('exam_id' => $row['exam_id']))->row()->user_type;
-                                    if($cek == 'EMPLOYEE'){ 
+                                    // $cek = $this->db->get_where('cbt_exam', array('exam_id' => $row['exam_id']))->row()->user_type;
+                                    // if($cek == 'EMPLOYEE'){ 
                                         echo $this->db->get_where('employee', array('nik' => $row['nik']))->row()->employee_name; 
-                                    } else {
-                                        echo $this->db->get_where('candidate', array('candidate_ktp' => $row['nik']))->row()->candidate_name; 
-                                    }
+                                    // } else {
+                                        // echo $this->db->get_where('candidate', array('candidate_ktp' => $row['nik']))->row()->candidate_name; 
+                                    // }
                                 ?>
                             </td>
                             <td><?php echo $row['answer_answer']; ?></td>

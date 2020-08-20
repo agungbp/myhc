@@ -85,9 +85,11 @@
                             <td style="text-align: center;"><h4><span class="badge badge-info"><?php echo $row['exam_token']; ?></span></h4></td>
                             <td style="text-align: center;">
                                 <?php if(date('Y-m-d H:i:s') < $row['exam_end_date'] . ' ' . $row['exam_end_time'] && date('Y-m-d H:i:s') > $row['exam_start_date'] . ' ' . $row['exam_start_time']) { ?>
-                                    <h4><span class="badge badge-success">Active</span></h4>
-                                <?php } else { ?>
-                                    <h4><span class="badge badge-danger">Inactive</span></h4>
+                                    <h5><span class="badge badge-success">Sedang Berlangsung</span></h5>
+                                <?php } elseif(date('Y-m-d H:i:s') < $row['exam_start_date'] . ' ' . $row['exam_start_time']) { ?>
+                                    <h5><span class="badge badge-secondary">Belum Dimulai</span></h5>
+                                <?php } elseif(date('Y-m-d H:i:s') > $row['exam_end_date'] . ' ' . $row['exam_end_time']) { ?>
+                                    <h5><span class="badge badge-danger">Sudah Berakhir</span></h5>
                                 <?php } ?>
                             </td>
                             <td style="text-align: center;">
